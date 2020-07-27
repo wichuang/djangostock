@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>內政部開放平台 MOI Open Data</h1>
+
+{% if ticker %}
+    {% if ticker == "Error ... " %}
+        Api 有錯誤!!!
+    {% else %}
+        <ul>
+        {% for every_api in ticker %}
+            {% for key, value in every_api.items %}
+                <!-- {{key}}: {{value}} --> 
+                <!-- first line is field name -->
+                {{ value }};
+            {% endfor %}
+            <br/>
+        {% endfor %}
+        </ul>
+    {% endif %}
+{% endif %}
+
+{% endblock %}

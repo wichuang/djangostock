@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Youtube Open Data</h1>
+
+<table class="table table-striped table-bordered table-hover">
+    <thead table-dark>
+      <tr>
+        <th scope="col">出版日期</th>
+        <th scope="col">標題</th>
+        <th scope="col">內容</th>
+        <th scope="col">連結網址</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if ticker %}
+        {% for list_item in output %}
+          <tr>
+            <th scope="row">{{list_item.publishedAt}}</th>
+            <td>{{list_item.title}}</td>
+            <td>{{list_item.description}}</td>
+            <td>{{list_item.thumbnailurl}}</td>
+          </tr>
+        {% endfor %}  
+      {% endif %}
+    </tbody>
+  </table>
+
+{% endblock %}

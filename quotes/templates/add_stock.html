@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Add stock ...</h1>
+<br/>
+
+<form action="{% url 'add_stock' %}" class="form-inline my-2 my-lg-0" method="POST">
+    {% csrf_token %}
+  <input class="form-control mr-sm-2" type="search" placeholder="加入公司代碼" aria-label="Search" name="ticker">
+  <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">輸入股票</button>
+</form>
+
+<table class="table table-striped table-bordered table-hover">
+  <thead table-dark>
+    <tr>
+      <th scope="col">公司名稱</th>
+      <th scope="col">股票價格</th>
+      <th scope="col">前日成交</th>
+      <th scope="col">市值</th>
+      <th scope="col">YTD改變</th>
+      <th scope="col">52週高</th>
+      <th scope="col">52週低</th>  
+    </tr>
+  </thead>
+  <tbody>
+    {% if ticker %}
+      {% for list_item in output %}
+        <tr>
+          <th scope="row">{{list_item.companyName}}</th>
+          <td>${{list_item.latestPrice}}</td>
+          <td>${{list_item.previousClose}}</td>
+          <td>${{list_item.marketCap}}</td>
+          <td>{{list_item.ytdChange}}%</td>
+          <td>${{list_item.week52High}}</td>
+          <td>${{list_item.week52Low}}</td>
+        </tr>
+      {% endfor %}  
+    {% endif %}
+  </tbody>
+</table>
+
+{% endblock %}

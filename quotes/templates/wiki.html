@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Wiki Craw Data</h1>
+
+<table class="table table-striped table-bordered table-hover">
+    <thead table-dark>
+      <tr>
+        <th scope="#">序號</th>
+        <th scope="">學校名稱</th>
+        <th scope="">英文簡稱</th>
+        <th scope="">起始年份(創校年份)</th>
+        <th scope="">學校地址</th>
+        <th scope="">校地(公頃)</th>
+        <th scope="">網址</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if ticker %}
+        {% for list_item in output %}
+          <tr>
+            <th scope="row">{{list_item.序號}}</th>
+            <td>{{list_item.學校名稱}}</td>
+            <td>{{list_item.英文簡稱}}</td>
+            <td>{{list_item.年份}}</td>
+            <td>{{list_item.地址}}</td>
+            <td>{{list_item.校地}}</td>
+            <td>{{list_item.網址}}</td>
+          </tr>
+        {% endfor %}
+      {% endif %}
+    </tbody>
+  </table>
+
+  {% endblock %}
