@@ -12,7 +12,7 @@
             {% for key, value in every_api.items %}
                 <!-- {{key}}: {{value}} --> 
                 <!-- first line is field name -->
-                {{ value }};
+                {{ value|linenumbers }};
             {% endfor %}
             <br/>
         {% endfor %}

@@ -10,6 +10,7 @@
 
     <title>股票市場 價格分析!</title>
   </head>
+
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <a class="navbar-brand" href="{% url 'home' %}">股票價格</a>
@@ -29,8 +30,16 @@
           </li>
           <a class="nav-link" href="{% url 'modi_stock' %}">維護股票 <span class="sr-only">(current)</span></a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'about' %}">關於我</a>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              PDF各種應用
+            </a>            
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{% url 'view_pdf' %}">View pdf using pdf2image</a>
+              <a class="dropdown-item" href="{% url 'save_pdf' %}">Save PDF as images to file</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{% url 'about' %}">關於我</a>
+            </div>            
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -38,6 +47,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="{% url 'moi' %}">MOI補習班 api</a>
+              <a class="dropdown-item" href="{% url 'moi_quick' %}">MOI補習班 api_quick</a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="{% url 'youtube' %}">Youtube api</a>
               <a class="dropdown-item" href="{% url 'facebook' %}">Facebook api</a>
@@ -49,6 +59,10 @@
           <li class="nav-item">
             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
           </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+          <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
         </ul>
         <form action="{% url 'home' %}" class="form-inline my-2 my-lg-0" method="POST">
             {% csrf_token %}

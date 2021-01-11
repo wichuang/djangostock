@@ -1,0 +1,62 @@
+<html lang="zh-TW">
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+        <title>Guest Manage</title>
+    </head>
+    <body role="document">
+        <!-- 導覽列 -->
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/event_manage/">Guest Manage System</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#">發佈會</a></li>
+                        <li><a href="/guest_manage/">嘉賓</a></li>
+                    </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#">{{user}}</a></li>
+                    <li><a href="/logout/">退出</a></li>
+                </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!--發佈會搜尋表單-->
+        <div class="page-header" style="padding-top: 60px;">
+            <div id="navbar" class="navbar-collapse collapse">
+                <form class="navbar-form" method="get" action="/search_name/">
+                    <div class="form-group">
+                        <input name="name" type="text" placeholder="名稱" class="formcontrol">
+                    </div>
+                <button type="submit" class="btn btn-success">搜尋</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 發佈會串列 -->
+        <div class="row" style="padding-top: 80px;">
+            <div class="col-md-6">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>id</th><th>名稱</th><th>狀態</th><th>位址</th><th>時間</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                            <tr>
+                                <td>{{ event.id }}</td>
+                                <td>{{ event.name }}</td>
+                                <td>{{ event.status }}</td>
+                                <td>{{ event.address }}</td>
+                                <td>{{ event.start_time }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

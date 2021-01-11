@@ -1,7 +1,74 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Stock
 from .forms import StockForm
 from django.contrib import messages
+from django.http import HttpResponse, HttpResponseRedirect
+from .models import Event, Guest
+from django.contrib import auth
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import logging
+import tempfile
+from tkinter import *
+from tkinter import filedialog
+from datetime import datetime
+
+logger = logging.getLogger(__name__)
+
+#發佈會管理(登入後default頁面)
+@login_required
+def event_manage(request):
+    event_list = Event.objects.all()
+    username = request.session.get('username', '')
+    return render(request, "event_manage.html", {"user": username,"events":event_list})
+
+# 發佈會名稱搜尋
+@login_required
+def search_name(request):
+    username = request.session.get('username', '')
+    search_name = request.GET.get("name", "")
+    event_list = Event.objects.filter(name__contains=search_name_bytes)
+    return render(request, "event_manage.html", {"user": username,"events": event_list})
+
+# 嘉宾管理
+@login_required
+def guest_manage(request):
+    guest_list = Guest.objects.all()
+    username = request.session.get('username', '')
+
+    paginator = Paginator(guest_list, 2)
+    page = request.GET.get('page')
+    try:
+        contacts = paginator.page(page)
+    except PageNotAnInteger:
+        # 如果页数不是整型, 取第一页.
+        contacts = paginator.page(1)
+    except EmptyPage:
+        # 如果页数超出查询范围，取最后一页
+        contacts = paginator.page(paginator.num_pages)
+    return render(request, "guest_manage.html", {"user": username, "guests": contacts})
+
+
+# 嘉宾手机号的查询
+@login_required
+def search_phone(request):
+    username = request.session.get('username', '')
+    search_phone = request.GET.get("phone", "")
+    search_name_bytes = search_phone.encode(encoding="utf-8")
+    guest_list = Guest.objects.filter(phone__contains=search_name_bytes)
+
+    paginator = Paginator(guest_list, 10)
+    page = request.GET.get('page')
+    try:
+        contacts = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        contacts = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        contacts = paginator.page(paginator.num_pages)
+
+    return render(request, "guest_manage.html", {"user": username, "guests": contacts, "phone":search_phone})
 
 # Create your views here.
 def home(request):
@@ -35,6 +102,19 @@ def moi(request):
 
     return render(request, 'moi.html', {'output': output})
 
+def moi_quick(request):
+    import requests
+    import json
+
+    # api_request = requests.get("http://od.moi.gov.tw/od/data/api/EA28418E-8956-4790-BAF4-C2D3988266CC?$format=json")
+    api_request = requests.get("https://bsb.kh.edu.tw/afterschool/opendata/afterschool_json.jsp?city=24")
+
+    try:
+        output = json.loads(api_request.content)
+    except Exception as e:
+        output = "Error ... "
+
+    return render(request, 'moi_quick.html', {'output': output})
 
 def youtube(request):
     import requests
@@ -152,6 +232,85 @@ def wiki_quick(request):
 def about(request):
     return render(request, 'about.html', {})
 
+def view_pdf(request):
+    # Importing required modules
+    from PIL import Image,ImageTk
+    from pdf2image import convert_from_path
+
+    # Grab the filename of the pdf file
+    open_file = filedialog.askopenfilename(
+        initialdir='D:\\My Work\\python\\djangostock\\stocks\\',
+        title = "Open PDF File",
+        filetypes = (
+            ("PDF Files", "*.pdf"),
+            ("All Files", ("*.*"))
+        )
+    )
+
+    # Check to see if there is a file
+    if open_file:
+        # Creating Tk container
+        root = Tk()
+        # Creating the frame for PDF Viewer
+        pdf_frame = Frame(root).pack(fill=BOTH,expand=1)
+        # Adding Scrollbar to the PDF frame
+        scrol_y = Scrollbar(pdf_frame,orient=VERTICAL)
+        # Adding text widget for inserting images
+        pdf = Text(pdf_frame,yscrollcommand=scrol_y.set,bg="grey")
+        # Setting the scrollbar to the right side
+        scrol_y.pack(side=RIGHT,fill=Y)
+        scrol_y.config(command=pdf.yview)
+        # Finally packing the text widget
+        pdf.pack(fill=BOTH,expand=1)
+
+        # Here the PDF is converted to list of images
+        pages = convert_from_path(open_file, poppler_path='D:\\My Work\\python\\djangostock\\venv\\Lib\\site-packages\\pdf2image\\poppler-0.68.0\\bin',size=(800,900))
+        # Empty list for storing images
+        photos = []
+        # Storing the converted images into list
+        for i in range(len(pages)):
+            photos.append(ImageTk.PhotoImage(pages[i]))
+        # Adding all the images to the text widget
+        for photo in photos:
+            pdf.image_create(END,image=photo)
+        
+            # For Seperating the pages
+            pdf.insert(END,'\n\n')
+
+        # Ending of mainloop, 讓pdf視窗一直顯示
+        mainloop()
+
+    now=datetime.now() #now變數將傳遞給pdf_image.html顯示現在時間
+    # 下列程式碼錯誤=> Tcl_AsyncDelete: async handler deleted by the wrong thread
+    # return render(request, 'pdf_image.html', locals()) #locals表示傳遞所有local變數
+    # 改為只傳遞now就OK!
+    return render(request, 'pdf_image.html', {"now": now})
+
+def save_pdf(request):
+    # Importing required modules
+    from PIL import Image,ImageTk
+    from pdf2image import convert_from_path
+
+    # Grab the filename of the pdf file
+    open_file = filedialog.askopenfilename(
+        initialdir='D:\\My Work\\python\\djangostock\\stocks\\',
+        title = "Open PDF File",
+        filetypes = (
+            ("PDF Files", "*.pdf"),
+            ("All Files", ("*.*"))
+        )
+    )
+
+    # Check to see if there is a file
+    if open_file:
+        with tempfile.TemporaryDirectory() as path:
+            # 目前報錯 PermissionError: [WinError 32] 程序無法存取檔案，因為檔案正由另一個程序使用            
+            images = convert_from_path(open_file, poppler_path='D:\\My Work\\python\\djangostock\\venv\\Lib\\site-packages\\pdf2image\\poppler-0.68.0\\bin', output_folder=path, fmt="jpeg")
+            # 無法至下行指令
+            # print('path', path)
+
+    return render(request, 'pdf_image.html', {})
+
 def add_stock(request):
     import requests
     import json
@@ -186,3 +345,15 @@ def del_stock(request, stock_id):
 def modi_stock(request):
     ticker = Stock.objects.all()
     return render(request, 'modi_stock.html', {'ticker': ticker})
+
+def dj_test(request):
+    return render(request, 'dj_test.html', {})
+
+def login_action(request):
+    if request.method == 'POST':
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        if username == 'admin' and password == 'admin123':
+            return HttpResponseRedirect('event_manage')
+        else:
+            return render(request,'dj_test.html', {'error': 'username or password error!'})

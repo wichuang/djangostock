@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<html>
+    <head>
+        <title>Django Page (dj_test)</title>
+    </head>
+    <body>
+        <h1>發佈會管理 (dj_test) </h1>
+        <form method="post" action="login_action">
+            <input name="username" type="text" placeholder="username" ><br>
+            <input name="password" type="password" placeholder="password"><br>
+            {{ error }}<br>
+            <button id="btn" type="submit">登錄</button>
+            {% csrf_token %}
+        </form>
+    </body>
+</html>
+
+{% endblock %}
