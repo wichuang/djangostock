@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Stock
+from quotes.models import Stock
 from .forms import StockForm
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Event, Guest
+from quotes.models import Event, Guest
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -336,15 +336,17 @@ def add_stock(request):
                 api = "Error ... "
         return render(request, 'add_stock.html', {'ticker': ticker, 'output': output})
 
+# 顯示要選擇股票刪除的路徑
+def stock_delete(request):
+    ticker = Stock.objects.all()
+    return render(request, 'stock_delete.html', {'ticker': ticker})
+
+# 執行刪除股票的路徑
 def del_stock(request, stock_id):
     item = Stock.objects.get(pk=stock_id)
     item.delete()
     messages.success(request, ("股票已刪除"))
-    return redirect(modi_stock)
-
-def modi_stock(request):
-    ticker = Stock.objects.all()
-    return render(request, 'modi_stock.html', {'ticker': ticker})
+    return redirect(stock_delete) #回到選擇股票刪除的頁面
 
 def dj_test(request):
     return render(request, 'dj_test.html', {})
